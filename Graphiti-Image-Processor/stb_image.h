@@ -1,3 +1,6 @@
+// Using the stb Library for Image Format Conversion and the initial Image Processing
+// Kudos to the devs of this library!
+ 
 /* stb_image - v2.26 - public domain image loader - http://nothings.org/stb
                                   no warranty implied; use at your own risk
 
