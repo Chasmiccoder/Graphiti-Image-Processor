@@ -44,10 +44,12 @@ class Image {
 
         ~Image(); // Destructor to free the allocated memory
 
-        bool read( std::string filename );
-        bool write( std::string filename );
+        bool read( std::string filename );     // Reads image data from a specified file 
+        bool write( std::string filename );    // Writes image data to a new file, with its specified filename
 
-        bool convertToPixelFormat();
+        bool convertRawImageToPixelFormat();   // Converts an image from raw image format to pixel vector format
+        bool convertPixelFormatToRawImage();   // Converts an image from pixel vector format to raw image format
+
 
     // Add function for convesion of 'data' to 'pixels'     
 
