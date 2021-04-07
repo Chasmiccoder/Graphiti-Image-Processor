@@ -66,7 +66,7 @@ Image::Image( const Image& img ) : Image( img.width, img.height, img.channels ) 
     */
     
     memcpy( data, img.data, size );
-    bool transform = convertRawImageToPixelFormat();
+    pixels = img.pixels;
 
 }
 
@@ -101,19 +101,19 @@ Image::ImageType Image::getFileType( std::string filename ) {
     }
 
     if ( fileFormat == "jpg" ) {
-        return ImageType::ImageType_JPG;
+        return ImageType_JPG;
     }
         
     else if ( fileFormat == "png" ) {
-        return ImageType::ImageType_PNG;
+        return ImageType_PNG;
     }
 
     else if ( fileFormat == "bmp" ) {
-        return ImageType::ImageType_BMP;
+        return ImageType_BMP;
     }
 
     else if ( fileFormat == "tga" ) {
-        return ImageType::ImageType_TGA;
+        return ImageType_TGA;
     }
 
     // If there is an issue with the filename that has been input, just convert it to .png
@@ -137,7 +137,8 @@ bool Image::read( std::string filename ) {
     bool tranform = convertRawImageToPixelFormat(); // Initialise the image in pixel vector format 
 
     // If the file was not read properly, return false, else return true
-    return data != NULL && tranform;
+    //return data != NULL && tranform;
+    return data != NULL;
 }
 
 
@@ -148,7 +149,11 @@ bool Image::write( std::string filename ) {
     */
 
     // Save changes made in pixel vector image to the raw image 
-    convertPixelFormatToRawImage();
+    bool transform = convertPixelFormatToRawImage();
+    if ( transform == false ) {
+        printf( "Error while writing image!\n" );
+        return false;
+    }
     
     ImageType type = getFileType( filename );
     const char* filename_const_char = filename.c_str();
@@ -192,10 +197,10 @@ bool Image::convertRawImageToPixelFormat() {
     int iterator = 0;
 
     for ( int i = 0; i < height; i++ ) {
-        std::vector< std::vector<uint8_t> > pixel_row;
+        std::vector< std::vector<int> > pixel_row;
 
         for ( int j = 0; j < width; j++ ) {
-            std::vector< uint8_t > pixel;
+            std::vector< int > pixel;
 
             for ( int k = 0; k < channels; k++ ) {
                 pixel.push_back( *(data + iterator) );
@@ -220,7 +225,8 @@ bool Image::convertPixelFormatToRawImage() {
     for ( int i = 0; i < height; i++ ) {
         for ( int j = 0; j < width; j++ ) {
             for ( int k = 0; k < channels; k++ ) {
-                *( data + iterator ) = pixels[i][j][k];  
+                //*( data + iterator ) = pixels[i][j][k];  
+                memset( data + iterator, pixels[i][j][k], 1 );
                 iterator++;
             }
         }

@@ -15,7 +15,7 @@ class Image {
 
         // Stores the image data in cleaner format
         //Each element pixels[i][j] is a vector with the RGB values {R,G,B} 
-        std::vector< std::vector< std::vector<uint8_t> > > pixels;
+        std::vector< std::vector< std::vector<int> > > pixels;
 
         // Stores the size of the image (width * height * channels)
         size_t size;
@@ -54,7 +54,7 @@ class Image {
             ImageType_JPG = 0, ImageType_PNG, ImageType_BMP, ImageType_TGA
         };
 
-        ImageType Image::getFileType( std::string filename );
+        ImageType getFileType( std::string filename );
 
 
     // Add function for convesion of 'data' to 'pixels'     
