@@ -1,18 +1,21 @@
 #pragma once
 
-// To use uint8_t
+// To use uint8_t (unsigned integer of exactly 8 bits)
 #include <stdint.h>
 
 // To store the image in a more refined / easily usable format
 #include <vector>
 
+#include <string>
+
 class Image {
     private:
         // Stores the image data in raw pixel format
-        uint8_t* data;
+        uint8_t* data = NULL;
 
         // Stores the image data in cleaner format
-        std::vector< std::vector<uint8_t> > pixels;
+        //Each element pixels[i][j] is a vector with the RGB values {R,G,B} 
+        std::vector< std::vector< std::vector<uint8_t> > > pixels;
 
         // Stores the size of the image (width * height * channels)
         size_t size;
@@ -20,6 +23,8 @@ class Image {
         int width;
         int height;
         int channels;
+
+        std::string filename;
 
         /*
         What are channels?
@@ -32,14 +37,18 @@ class Image {
 
 
     public:
-        Image() {
-            data     = NULL;
-            pixels   = {{0,0,0}}; // Just one black pixel
-            size     = 0;
-            width    = 0;
-            height   = 0;
-            channels = 0;
-        }
-     
+        Image();                                       // Default constructor to load a blank image (1 pixel)
+        Image( std::string filename );                 // Constructor to load an image with given filename
+        Image( int width, int height, int channels );  // Constructor to load a blank image with given dimensions
+        Image( const Image& img );                     // Copy constructor to copy an existing image
+
+        ~Image(); // Destructor to free the allocated memory
+
+        bool read( std::string filename );
+        bool write( std::string filename );
+
+        bool convertToPixelFormat();
+
+    // Add function for convesion of 'data' to 'pixels'     
 
 };
