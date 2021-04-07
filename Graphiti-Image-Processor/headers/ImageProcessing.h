@@ -54,6 +54,8 @@ class Image {
             ImageType_JPG = 0, ImageType_PNG, ImageType_BMP, ImageType_TGA
         };
 
+        ImageType Image::getFileType( std::string filename );
+
 
     // Add function for convesion of 'data' to 'pixels'     
 

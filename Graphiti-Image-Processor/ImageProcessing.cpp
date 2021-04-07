@@ -78,9 +78,49 @@ Image::~Image() {
     
     // To free the raw image
     stbi_image_free( data );
-    
+
     // We do not need to free the image in pixel vector format, since the compiler ensures that the vector
     // will get freed after use
+}
+
+
+Image::ImageType Image::getFileType( std::string filename ) {
+    /*
+    Takes an input string and returns the format of the image
+    Currently supported formats: .jpg, .png, .bmp, .tga
+    */
+    
+    int length = filename.length();
+    std::string fileFormat = "";
+    for ( int i = length - 1; i >= 0; i-- ) {
+        std::string character = filename.substr( i,1 );
+        if ( character == "." ) {
+            fileFormat = filename.substr( i + 1, length- i - 1 );
+            break;
+        }
+    }
+
+    if ( fileFormat == "jpg" ) {
+        return ImageType::ImageType_JPG;
+    }
+        
+    else if ( fileFormat == "png" ) {
+        return ImageType::ImageType_PNG;
+    }
+
+    else if ( fileFormat == "bmp" ) {
+        return ImageType::ImageType_BMP;
+    }
+
+    else if ( fileFormat == "tga" ) {
+        return ImageType::ImageType_TGA;
+    }
+
+    // If there is an issue with the filename that has been input, just convert it to .png
+    else {
+        return ImageType::ImageType_PNG;
+    }
+
 }
 
 
@@ -105,10 +145,37 @@ bool Image::write( std::string filename ) {
     /*
     The image gets converted back to its raw image format from the pixel vector format, 
     after which it gets written to a file
-
     */
+
+    // Save changes made in pixel vector image to the raw image 
+    convertPixelFormatToRawImage();
     
-    
+    ImageType type = getFileType( filename );
+    const char* filename_const_char = filename.c_str();
+    int success;
+
+    switch( type ) {
+        case ImageType_JPG:
+            success = stbi_write_jpg( filename_const_char, width, height, channels, data, 100 );
+            break;
+        
+        case ImageType_PNG:
+            // The last argument is stride_in_bytes, which is the product of the width and the number of channels
+            success = stbi_write_png( filename_const_char, width, height, channels, data, width * channels );
+            break;
+        
+        case ImageType_BMP:
+            success = stbi_write_bmp( filename_const_char, width, height, channels, data );
+            break;
+        
+        case ImageType_TGA:
+            success = stbi_write_tga( filename_const_char, width, height, channels, data );
+            break;
+
+    }
+
+    // If success is 0, then something went wrong and the file did not get written properly
+    return success != 0;
 
 }
 
@@ -159,7 +226,7 @@ bool Image::convertPixelFormatToRawImage() {
         }
     }
 
-    // Something went wrong
+    // If something went wrong
     if ( data == NULL ) {
         return false;
     }
