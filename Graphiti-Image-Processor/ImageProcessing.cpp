@@ -8,7 +8,7 @@
 
 Image::Image() {
     /*
-    Loads a blank image with just one blank pixel
+    Allocates a blank image with just one blank pixel
     */
     
     size     = 3;
@@ -24,11 +24,65 @@ Image::Image() {
 
 }
 
-Image::Image( std::string filename ) {
-    this->filename = filename;
 
+Image::Image( std::string filename ) {
+    /*
+    Reads the specified file using the read() method,
+    and allocates the pixels of the image
+    */
+    
+    bool read_status = read( filename );
+    
+    if ( read_status ) {
+        printf( "Successfully read file: " );
+        std::cout << filename << std::endl;
+        size = width * height * channels;
+    }
+
+    else {
+        printf( "Failed to read file: " );
+        std::cout << filename << std::endl;
+    }
             
 }
+
+
+Image::Image( int width, int height, int channels ) : width(width), height(height), channels(channels) {
+    /*
+    Allocates an empty image with specified width, height, and number of channels
+    */
+    
+    size = width * height * channels;
+    data = new uint8_t[ size ];
+    bool transform = convertRawImageToPixelFormat();
+
+}
+
+
+Image::Image( const Image& img ) : Image( img.width, img.height, img.channels ) {
+    /*
+    Copy constructor that helps copy one image to another
+    Useful for image manipulation, since the original image remains unaffected
+    */
+    
+    memcpy( data, img.data, size );
+    bool transform = convertRawImageToPixelFormat();
+
+}
+
+
+Image::~Image() {
+    /*
+    Default destructor that frees the memory used by the image
+    */
+    
+    // To free the raw image
+    stbi_image_free( data );
+    
+    // We do not need to free the image in pixel vector format, since the compiler ensures that the vector
+    // will get freed after use
+}
+
 
 bool Image::read( std::string filename ) {
     /*
@@ -46,12 +100,15 @@ bool Image::read( std::string filename ) {
     return data != NULL && tranform;
 }
 
+
 bool Image::write( std::string filename ) {
     /*
     The image gets converted back to its raw image format from the pixel vector format, 
     after which it gets written to a file
 
     */
+    
+    
 
 }
 
@@ -91,5 +148,21 @@ bool Image::convertRawImageToPixelFormat() {
 
 
 bool Image::convertPixelFormatToRawImage() {
+    int iterator = 0;
+
+    for ( int i = 0; i < height; i++ ) {
+        for ( int j = 0; j < width; j++ ) {
+            for ( int k = 0; k < channels; k++ ) {
+                *( data + iterator ) = pixels[i][j][k];  
+                iterator++;
+            }
+        }
+    }
+
+    // Something went wrong
+    if ( data == NULL ) {
+        return false;
+    }
+    return true;
 
 }

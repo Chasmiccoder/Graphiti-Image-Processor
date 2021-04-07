@@ -5,7 +5,7 @@
 
 // To store the image in a more refined / easily usable format
 #include <vector>
-
+#include <iostream>
 #include <string>
 
 class Image {
@@ -49,6 +49,10 @@ class Image {
 
         bool convertRawImageToPixelFormat();   // Converts an image from raw image format to pixel vector format
         bool convertPixelFormatToRawImage();   // Converts an image from pixel vector format to raw image format
+
+        enum ImageType {
+            ImageType_JPG = 0, ImageType_PNG, ImageType_BMP, ImageType_TGA
+        };
 
 
     // Add function for convesion of 'data' to 'pixels'     
